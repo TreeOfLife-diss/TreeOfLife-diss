@@ -1,8 +1,8 @@
 """
 Specific variables for the host project.
 """
-# Copyright © 2018-2019 Tree-of-Life
-# https://github.com/joaomcteixeira/Tree-of-Life
+# TreeOfLife - DISS (2019-)
+# https://github.com/TreeOfLife-diss
 #
 # Contributors to this file:
 # - João M.C. Teixeira (https://github.com/joaomcteixeira)
