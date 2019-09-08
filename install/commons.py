@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Common fuctions that serve installation and update.
 """

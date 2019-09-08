@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Manages system information and other parameters for
 installation and updating.

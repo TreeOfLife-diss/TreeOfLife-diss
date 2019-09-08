@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Informative messages for the installation and update processes.
 """

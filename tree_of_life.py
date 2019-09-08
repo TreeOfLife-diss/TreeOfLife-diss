@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Tree-of-Life installer.
 """

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Specific variables for the host project.
 """
