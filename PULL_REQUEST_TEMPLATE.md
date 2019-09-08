@@ -1,0 +1,9 @@
+- Please read the [CONTRIBUTING](https://github.com/TreeOfLife-diss/TreeOfLife-diss/blob/master/CONTRIBUTING.md) guidelines before proposing a Pull Request.
+- be sure your code complies with `flake8 --hang-closing --ignore=W293,W503,E402` style.
+- link your PR to an Issue if applicable; if not, describe what you aim to change with your PR:
+    - if possible
+    - use bullets
+- describe the improvements introduced by your PR:
+    - it possible
+    - use bullets
+    - again :-)
