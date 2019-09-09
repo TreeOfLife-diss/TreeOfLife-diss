@@ -84,10 +84,10 @@ class CondaManager(object):
             system.default_miniconda_folder
             )
         
+        self.env_nane = 'treeoflife'
         self.env_file = env
         
         return
-    
     
     @property
     def install_folder(self):
@@ -97,7 +97,7 @@ class CondaManager(object):
         return self._install_folder
     
     @install_folder.setter
-    def set_install_folder(self, folder):
+    def install_folder(self, folder):
         self._install_folder = folder
     
     @property
@@ -138,16 +138,15 @@ class CondaManager(object):
         debug_msg = "<miniconda_download_link> set to: {}"
         self.log.debug(debug_msg.format(self._miniconda_download_link))
     
-    def set_miniconda_install_file(self, exec_file):
-        """
-        Sets Miniconda installation file.
-        """
-        
+    @property
+    def miniconda_install_file(self):
+        return self._miniconda_install_file
+    
+    @miniconda_install_file.setter
+    def miniconda_install_file(self, exec_file):
         self._miniconda_install_file = exec_file
-        
         debug_msg = "<miniconda_install_file> set to: {}"
         self.log.debug(debug_msg.format(self._miniconda_install_file))
-        return
     
     @property
     def miniconda_install_folder(self):
@@ -181,8 +180,8 @@ class CondaManager(object):
         if env_file is None:
             self._env_file = None
             self.log.debug("<env_file>: ".format(self._env_file))
-            self.set_env_name(None)
-            self.set_env_version(None)
+            self.env_name = None
+            self.env_version = None
             return
         
         self.log.debug("reading env_file: {}".format(env_file))
@@ -205,11 +204,11 @@ class CondaManager(object):
                     
                     if line.startswith("name:"):
                         env_name = line.strip().split()[-1]
-                        self.set_env_name(env_name)
+                        self.env_name = env_name
                     
                     elif line.startswith("# version:"):
                         env_version = line.strip().split()[-1]
-                        self.set_env_version(env_version)
+                        self.env_version = env_version
         
         elif not(isinstance(env_file, str)):
             raise ValueError("Miniconda env file name not a string")
@@ -255,27 +254,35 @@ class CondaManager(object):
     
         return
     
-    def set_env_name(self, name='treeoflife'):
+    @property
+    def env_name(self):
         """
-        Sets Conda environment name.
+        Conda environment name for the host project.
         """
-        
+        return self._env_name
+    
+    @env_name.setter
+    def env_name(self, name):
         self._env_name = name
         self.log.debug("<env_name>: {}".format(self._env_name))
         return
     
-    def set_env_python_exec(self, python_exec):
-        """
-        Defines Python executable for host project.
-        """
-        
-        self._env_python_exec = python_exec
-        
-        self.log.debug("<env_python_exec>: {}".format(self._env_python_exec))
-        
-        return
+    @property
+    def env_python_exec(self):
+        """Python executable for host project."""
+        return self._env_python_exec
     
-    def set_env_version(self, env_version):
+    @env_python_exec.setter
+    def env_python_exec(self, python_exec):
+        self._env_python_exec = python_exec
+        self.log.debug("<env_python_exec>: {}".format(self._env_python_exec))
+    
+    @property
+    def env_version(self):
+        return self._env_version
+    
+    @env_version.setter
+    def env_version(self, env_version):
         """
         Sets Miniconda environment version.
         Should be integer.
@@ -303,7 +310,12 @@ class CondaManager(object):
         self.log.debug("<env_version>: {}".format(self._env_version))
         return
     
-    def set_env_folder(self, env_folder):
+    @property
+    def env_folder(self):
+        return self._env_folder
+    
+    @env_folder.setter
+    def env_folder(self, env_folder):
         """
         Defines an existent ENV folder
         """
@@ -320,28 +332,6 @@ class CondaManager(object):
         self._env_folder = env_folder
         self.log.debug("<env_folder>: {}".format(self._env_folder))
         return
-    
-    
-    def get_miniconda_install_file(self):
-        return self._miniconda_install_file
-    
-    def get_env_reference_file(self):
-        return self._env_reference_file
-    
-    def get_env_name(self):
-        return self._env_name
-    
-    def get_env_python_exec(self):
-        return self._env_python_exec
-    
-    def get_python_version_folder(self):
-        return self._python_version_folder
-    
-    def get_env_version(self):
-        return self._env_version
-    
-    def get_env_folder(self):
-        return self._env_folder
     
     def check_previous_miniconda_folder(self, folder='[M|m]iniconda.*'):
         """
@@ -385,15 +375,15 @@ class CondaManager(object):
         self.log.info("* Downloading Miniconda...")
         self.log.debug("url: {}".format(self.miniconda_download_link))
         self.log.debug(
-            "destination: {}".format(self.get_miniconda_install_file())
+            "destination: {}".format(self.miniconda_install_file)
             )
         
         commons.download_file(
             self.miniconda_download_link,
-            self.get_miniconda_install_file()
+            self.miniconda_install_file
             )
         
-        commons.change_permissions_777(self.get_miniconda_install_file())
+        commons.change_permissions_777(self.miniconda_install_file)
         self.log.debug("permissions changed")
         
         return
@@ -405,7 +395,7 @@ class CondaManager(object):
         
         unix_exec_line = " ".join(
             [
-                self.get_miniconda_install_file(),
+                self.miniconda_install_file,
                 '-b',
                 '-p',
                 self.miniconda_install_folder
@@ -420,7 +410,7 @@ class CondaManager(object):
             # https://conda.io/docs/user-guide/install/windows.html
             exec_line = " ".join(
                 [
-                    self.get_miniconda_install_file(),
+                    self.miniconda_install_file,
                     "/InstallationType=JustMe",
                     "/RegisterPython=0",
                     "/S",
@@ -448,19 +438,15 @@ class CondaManager(object):
             # https://stackoverflow.com/questions/37117571/where-does-anaconda-python-install-on-windows
             # https://stackoverflow.com/questions/44597662/conda-command-is-not-recognized-on-windows-10
             # https://stackoverflow.com/questions/28612500/why-anaconda-does-not-recognize-conda-command
-            self.set_conda_exec(
-                os.path.join(
-                    self.miniconda_install_folder,
-                    'Scripts',
-                    'conda.exe'
-                    )
+            self.conda_exec = os.path.join(
+                self.miniconda_install_folder,
+                'Scripts',
+                'conda.exe'
                 )
             
-            self.set_env_python_exec(
-                os.path.join(
-                    self.miniconda_install_folder,
-                    'python.exe'
-                    )
+            self.env_python_exec = os.path.join(
+                self.miniconda_install_folder,
+                'python.exe'
                 )
         
         else:  # UNIX systems
@@ -472,12 +458,10 @@ class CondaManager(object):
                     )
                 )
             
-            self.set_env_python_exec(
-                os.path.join(
-                    self.miniconda_install_folder,
-                    'bin',
-                    'python'
-                    )
+            self.env_python_exec = os.path.join(
+                self.miniconda_install_folder,
+                'bin',
+                'python',
                 )
         
         return
@@ -535,7 +519,7 @@ class CondaManager(object):
         Installs Anaconda Environment.
         """
         
-        if self.get_env_name() is None:
+        if self.env_name is None:
             self.log.debug("no environment to install... ignoring...")
             return
         
@@ -553,30 +537,24 @@ class CondaManager(object):
         
         # sets python env variables
         
-        self.set_env_folder(
-            os.path.join(
-                self.miniconda_install_folder,
-                'envs',
-                self.get_env_name()
-                )
+        self.env_folder = os.path.join(
+            self.miniconda_install_folder,
+            'envs',
+            self.env_name,
             )
         
         if system.platform in ("Windows"):
             # https://docs.anaconda.com/anaconda/user-guide/tasks/integration/python-path/
-            self.set_env_python_exec(
-                os.path.join(
-                    self.get_env_folder(),
-                    'python.exe'
-                    )
+            self.env_python_exec = os.path.join(
+                self.env_folder,
+                'python.exe',
                 )
         
         else:  # UNIX systems
-            self.set_env_python_exec(
-                os.path.join(
-                    self.get_env_folder(),
-                    'bin',
-                    'python'
-                    )
+            self.env_python_exec = os.path.join(
+                self.env_folder,
+                'bin',
+                'python',
                 )
         
         # self.set_python_version_folder()
@@ -588,7 +566,7 @@ class CondaManager(object):
         Registers installed env to log file.
         """
         
-        if self.get_env_name() is None:
+        if self.env_name is None:
             self.log.debug("no environment to install... ignoring...")
             return
         
@@ -597,7 +575,7 @@ class CondaManager(object):
         # confirm environment was installed correctly
         exec_line = "{} list -n {}".format(
             self.conda_exec,
-            self.get_env_name()
+            self.env_name,
             )
         
         # https://stackoverflow.com/questions/606191/convert-bytes-to-a-string
@@ -621,7 +599,7 @@ class CondaManager(object):
                 self.conda_exec,
                 'develop',
                 '-p',
-                self.get_env_folder(),
+                self.env_folder,
                 self.install_folder,
                 ]
             )
@@ -638,7 +616,7 @@ class CondaManager(object):
         Removes Miniconda Environment.
         """
         
-        if self.get_env_name() is None:
+        if self.env_name is None:
             self.log.debug("no environment to remove... ignoring...")
             return
         
@@ -646,7 +624,7 @@ class CondaManager(object):
         
         exec_line = '{} remove -vy --name {} --all'.format(
             self.conda_exec,
-            self.get_env_name()
+            self.env_name,
             )
         
         commons.sub_call(exec_line)
