@@ -187,16 +187,18 @@ def change_permissions_777(file_):
     """
     Changes <file_> permissions to 777.
     """
+    log.debug("changing permissions to file: {}".format(file_))
     
-    if not(os.path.exists(file_)):
+    try:
+        os.chmod(file_, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+    except FileNotFoundError as e:
+        log.exception(e)
         log.info("* ERROR * File '{}' not found!".format(file_))
         log.info(messages.something_wrong)
         log.info(messages.additional_help)
         log.info(messages.abort)
         sys_exit()
     
-    log.debug("changing permissions to file: {}".format(file_))
-    os.chmod(file_, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
     log.debug("... OKAY")
     
     return
