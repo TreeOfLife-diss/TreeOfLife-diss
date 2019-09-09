@@ -65,3 +65,4 @@ miniconda_file_extension = _miniconda_file_extensions[platform]
 # other variables
 approve = ["Y", "YES"]
 deny = ["N", "NO", "EXIT", "E", "A", "ABORT"]
+approve_deny = approve + deny

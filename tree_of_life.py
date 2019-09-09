@@ -82,7 +82,7 @@ log.debug("{} installation initiated".format(host_project_vars.software_name))
 log.debug("<installation_folder>: {}".format(system.installation_folder))
 log.info(host_project_vars.banner)
 log.info(messages.start_install)
-time.sleep(0.5)
+time.sleep(0.5)   # little human feeling
 
 log.info(messages.install_header)
 log.info(messages.install_options_full)
@@ -99,7 +99,7 @@ while install_choice not in ("1", "2", "3"):
 log.debug("final install_choice: {}".format(install_choice))
 log.info("\n")
 
-time.sleep(0.5)
+time.sleep(0.5)  # little human feeling
 
 # Applies choice
 if install_choice == "1":  # installs Miniconda and Python Environment
@@ -128,7 +128,7 @@ if install_choice == "1":  # installs Miniconda and Python Environment
         log.info(messages.query_miniconda_reinstall)
         
         choice = None
-        while not(choice in system.approve) and not(choice in system.deny):
+        while choice not in system.approve_deny:
             choice = user_input(messages.query).strip().upper()
             log.debug("<choice>: {}".format(choice))
         
