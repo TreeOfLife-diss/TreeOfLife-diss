@@ -61,14 +61,19 @@ else:
 
 def check_available_disk_space(min_space=None):
     """
-    Returns True if disk space is higher than <min_space>, False
-    otherwise.
+    Checks available disk space.
     
-    Parameters:
+    Parameters
+    ----------
+    min_space : :obj:`float
+        The minimum space allowed in GBs.
+        Defaults to host_project_vars.min_space_allowed
     
-        - min_space (float): the minimum space allowed in GBs.
-            Defaults to host_project_vars.min_space_allowed
-    
+    Returns
+    -------
+    bool
+        ``True`` if available space is higher than `min_space`,
+        ``False`` otherwise.
     """
     
     min_space = min_space or host_project_vars.min_space_allowed
@@ -77,7 +82,7 @@ def check_available_disk_space(min_space=None):
     try:
         min_space = float(min_space)
     except ValueError as e:
-        log.debug(e)
+        log.exception(e)
         log.info("<min_space> should be integer")
         sys_exit()
     
@@ -86,19 +91,11 @@ def check_available_disk_space(min_space=None):
     dirname = os.path.expanduser("~")
     
     if system.platform == "Windows":
-        free_bytes = ctypes.c_ulonglong(0)
-        ctypes.windll.kernel32.GetDiskFreeSpaceExW(
-            ctypes.c_wchar_p(dirname),
-            None,
-            None,
-            ctypes.pointer(free_bytes)
-            )
-        free_space_GB = int(free_bytes.value / 1024 / 1024 / 1024)
-    
+        calc_space = _available_space_windows
     else:
-        statvfs = os.statvfs(dirname)
-        free_space_GB = \
-            int(statvfs.f_frsize * statvfs.f_bavail / 1024 / 1024 / 1024)
+        calc_space = _available_space_linux_unix
+    
+    free_space_GB = calc_space(dirname)
     
     log.info("* ... available space: approx. {} GB".format(free_space_GB))
     
@@ -114,6 +111,31 @@ def check_available_disk_space(min_space=None):
         log.info(messages.additional_help)
         log.info(messages.abort)
         sys_exit()
+
+
+def _available_space_windows(dirname):
+    """
+    Calculates the available free space for Windows platforms.
+    """
+    free_bytes = ctypes.c_ulonglong(0)
+    ctypes.windll.kernel32.GetDiskFreeSpaceExW(
+        ctypes.c_wchar_p(dirname),
+        None,
+        None,
+        ctypes.pointer(free_bytes)
+        )
+    free_space_GB = int(free_bytes.value / 1024 / 1024 / 1024)
+    return free_space_GB
+
+
+def _available_space_linux_unix(dirname):
+    """
+    Calculates the available free space for Linux/Unix platforms.
+    """
+    statvfs = os.statvfs(dirname)
+    free_space_GB = \
+        int(statvfs.f_frsize * statvfs.f_bavail / 1024 / 1024 / 1024)
+    return free_space_GB
 
 
 def reporthook(blocknum, blocksize, totalsize):
@@ -138,9 +160,17 @@ def download_file(link, destination):
     """
     Downloads file.
     
-    Parameters:
-        - link (str): the file URL
-        - destination (str): where to save file in computer
+    Parameters
+    ----------
+    link : :obj:`str`
+        the file URL
+    
+    destination :obj:`str`
+        Where to save the downloaded file in disk
+    
+    Returns
+    -------
+    None
     """
     log.info("* Downloading {}...".format(link))
     log.info("* ... to destination: {}".format(destination))
@@ -208,8 +238,14 @@ def remove_folders(folder_list):
     """
     Removes a list of folders
     
-    Parameters:
-        - folder_list (list)
+    Parameters
+    ----------
+    folder_list :obj:`list`
+        The list of folders to remove.
+    
+    Returns
+    -------
+    None
     """
     
     if not(isinstance(folder_list, list)):
@@ -238,11 +274,14 @@ def sub_call(exec_line):
     """
     Executes a subprocess.
     
-    Parameters:
-        
-        - exec_line (str): the command to execute
+    Parameters
+    ----------
+    exec_line : :obj:`str`
+        The command to execute.
     
-    Returns the output of execution.
+    Returns
+    -------
+    The output of execution.
     """
     log.info("* Executing ...{}".format(exec_line))
     args = exec_line.strip().split()
@@ -276,12 +315,19 @@ def create_executables(installation_folder, python_exec):
     """
     Creates executables based on user.executables module.
     
-    Parameters:
-    
-        - installation_folder (str): the software installation folder,
-            where the 'bin' folder will reside
+    Parameters
+    ----------
+    installation_folder :obj:`str`
+        The software installation folder, where the 'bin' folder 
+        will reside.
         
-        - python_exec (str): the full path for the python executable
+    python_exec : :obj:`str`
+        The full path for the python executable.
+        Will be written to the shebang line.
+    
+    Returns
+    -------
+    None
     """
     
     log.info(messages.gen_files_msg_head)
