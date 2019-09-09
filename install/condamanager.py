@@ -186,12 +186,12 @@ class CondaManager(object):
         
         self.log.debug("reading env_file: {}".format(env_file))
         
-        valid_file = all(
+        valid_file = all((
             isinstance(env_file, str),
             env_file.endswith('.yml'),
             os.path.exists(env_file),
             os.path.isfile(env_file),
-            )
+            ))
         
         self.log.debug("<valid_file>: {}".format(valid_file))
             
