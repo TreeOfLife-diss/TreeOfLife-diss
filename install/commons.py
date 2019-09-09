@@ -27,11 +27,11 @@ import stat
 import shutil
 import ctypes
 
-from install import logger
-from install import host_project_vars
-from install import system
-from install import messages
-from install import executables
+import logger
+import host_project_vars
+import system
+import messages
+import executables
 
 log = logger.InstallLogger(__name__).gen_logger()
 

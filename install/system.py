@@ -23,7 +23,7 @@ installation and updating.
 # with this library. If not, see <http://www.gnu.org/licenses/>.
 import platform as pltfrm
 import os
-from install import host_project_vars
+import host_project_vars
 
 # about the default installation folder
 _file_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))

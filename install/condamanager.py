@@ -35,10 +35,10 @@ else:
     sys.exit("* ABORTING * You are using a Python '{}', \
 you should use versions 2 or 3.".format(python_version))
 
-from install import logger
-from install import system
-from install import messages
-from install import commons
+import logger
+import system
+import messages
+import commons
 
 
 class CondaManager(object):

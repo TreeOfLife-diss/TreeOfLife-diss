@@ -23,9 +23,9 @@ Informative messages for the installation and update processes.
 import os
 import textwrap
 
-from install import host_project_vars
-from install import system
-from install import executables
+import host_project_vars
+import system
+import executables
 
 # provide a link and e-mail with further documentation on the install process
 install_wiki = host_project_vars.install_wiki

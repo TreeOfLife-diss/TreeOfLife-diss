@@ -20,7 +20,7 @@ Defines executable files.
 #
 # You should have received a copy of the this license along
 # with this library. If not, see <http://www.gnu.org/licenses/>.
-from install import system
+import system
 
 # interesting readings:
 # https://stackoverflow.com/questions/6943208/activate-a-virtualenv-with-a-python-script

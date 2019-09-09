@@ -41,10 +41,10 @@ import shutil
 import zipfile
 import time
 
-from install import logger
-from install import host_project_vars
-from install import commons
-from install import messages
+import logger
+import host_project_vars
+import commons
+import messages
 
 _new_version_url = host_project_vars.new_version_url
 _new_version_zip = host_project_vars.new_version_zip
