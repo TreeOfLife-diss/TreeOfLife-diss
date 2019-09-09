@@ -59,7 +59,7 @@ class CondaManager(object):
         
         self.log = logger.InstallLogger(__name__).gen_logger()
         
-        self.install_folder = cwd or os.get_cwd()
+        self.install_folder = cwd or os.getcwd()
         
         self.miniconda_base_web_link = system.base_miniconda_web_link
         
@@ -635,3 +635,4 @@ class CondaManager(object):
 if __name__ == "__main__":
     
     print('I am Tree-of-Life')
+    cm = CondaManager()
