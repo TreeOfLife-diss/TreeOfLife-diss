@@ -41,7 +41,7 @@ from install import messages
 from install import commons
 
 
-class CondaManager():
+class CondaManager(object):
     """
     Manages Miniconda installation and ENV configuration.
     """
@@ -59,100 +59,84 @@ class CondaManager():
         
         self.log = logger.InstallLogger(__name__).gen_logger()
         
-        cwd = cwd or os.get_cwd()
-        self.set_install_folder(cwd)
+        self.install_folder = cwd or os.get_cwd()
         
-        self.set_miniconda_base_web_link(system.base_miniconda_web_link)
+        self.miniconda_base_web_link = system.base_miniconda_web_link
         
-        self.set_miniconda_web_file(
-            "Miniconda3-latest-{}-{}.{}".format(
-                system.platform,
-                system.bits,
-                system.miniconda_file_extension
-                )
+        self.miniconda_web_file = "Miniconda3-latest-{}-{}.{}".format(
+            system.platform,
+            system.bits,
+            system.miniconda_file_extension
             )
         
-        self.set_miniconda_download_link(
-            urlparse.urljoin(
-                self.get_miniconda_base_web_link(),
-                self.get_miniconda_web_file()
-                )
+        self.miniconda_download_link = urlparse.urljoin(
+            self.miniconda_base_web_link,
+            self.miniconda_web_file,
             )
         
-        self.set_miniconda_install_file(
-            os.path.join(
-                self.get_install_folder(),
-                self.get_miniconda_web_file()
-                )
+        self.miniconda_install_file = os.path.join(
+            self.install_folder,
+            self.miniconda_web_file,
             )
         
-        self.set_miniconda_install_folder(
-            os.path.join(
-                self.get_install_folder(),
-                system.default_miniconda_folder
-                )
+        self.miniconda_install_folder = os.path.join(
+            self.install_folder,
+            system.default_miniconda_folder
             )
         
-        self.set_env_file(env)
+        self.env_file = env
         
         return
     
+    
+    @property
+    def install_folder(self):
+        """
+        Installation directory.
+        """
+        return self._install_folder
+    
+    @install_folder.setter
     def set_install_folder(self, folder):
-        """
-        Sets current working directory, where installation will take place.
-        
-        Parameters:
-            - folder (str): folder path
-        """
         self._install_folder = folder
     
-        return
+    @property
+    def miniconda_base_web_link(self):
+        """
+        base web link where to download Miniconda from.
+        
+        Example: https://repo.continuum.io/miniconda/
+        """
+        return self._miniconda_base_web_link
     
-    def set_miniconda_base_web_link(self, link):
-        """
-        Sets the base web link where to download Miniconda.
-        
-        Parameters:
-        
-            - link (str): web link
-        
-        Example:
-            https://repo.continuum.io/miniconda/
-        """
+    @miniconda_base_web_link.setter
+    def miniconda_base_web_link(self, link):
         self._miniconda_base_web_link = link
-        
         debug_msg = "<miniconda_web_base_link> set to: {}"
         self.log.debug(debug_msg.format(self._miniconda_base_web_link))
-        
-        return
     
-    def set_miniconda_web_file(self, file_name):
+    @property
+    def miniconda_web_file(self):
         """
-        Sets Miniconda download file.
-        
-        Parameters:
-        
-            - file_name (str): the name of the file.
+        Miniconda download file
         """
+        return self._miniconda_web_file
         
+    @miniconda_web_file.setter
+    def miniconda_web_file(self, file_name):
         self._miniconda_web_file = file_name
-        
         debug_msg = "<miniconda_web_file> set to: {}"
         self.log.debug(debug_msg.format(self._miniconda_web_file))
-        
-        return
     
-    def set_miniconda_download_link(self, link):
-        """
-        Sets Miniconda full download URL.
-        """
-        
+    @property
+    def miniconda_download_link(self):
+        return self._miniconda_download_link
+    
+    @miniconda_download_link.setter
+    def miniconda_download_link(self, link):
         self._miniconda_download_link = link
-        
         debug_msg = "<miniconda_download_link> set to: {}"
         self.log.debug(debug_msg.format(self._miniconda_download_link))
-        
-        return
     
     def set_miniconda_install_file(self, exec_file):
         """
@@ -165,29 +149,33 @@ class CondaManager():
         self.log.debug(debug_msg.format(self._miniconda_install_file))
         return
     
-    def set_miniconda_install_folder(self, folder):
+    @property
+    def miniconda_install_folder(self):
         """
-        Sets Miniconda installation folder.
-        
-        Parameters:
-        
-            - folder (str): the main folder where to place Miniconda
-                install folder.
+        Miniconda installation folder.
         """
+        return self._miniconda_install_folder
+    
+    @miniconda_install_folder.setter
+    def miniconda_install_folder(self, folder):
         self._miniconda_install_folder = folder
-        
         debug_msg = "<miniconda_install_folder> set to: {}"
         self.log.debug(debug_msg.format(self._miniconda_install_folder))
-        
-        return
     
-    def set_env_file(self, env_file):
+    @property
+    def env_file(self):
         """
-        Sets Miniconda environment file for host project.
-        
-        Parameters:
-        
-            - env_file (str): path to Anaconda Env (.yml) file.
+        Miniconda environment file for host project.
+        """
+        return self._env_file
+    
+    @env_file.setter
+    def env_file(self, env_file):
+        """
+        Parameters
+        ----------
+        env_file :obj:`str`
+            Path to Anaconda Env (.yml) file.
         """
         
         if env_file is None:
@@ -195,16 +183,15 @@ class CondaManager():
             self.log.debug("<env_file>: ".format(self._env_file))
             self.set_env_name(None)
             self.set_env_version(None)
-            
             return
         
         self.log.debug("reading env_file: {}".format(env_file))
         
-        valid_file = bool(
-            isinstance(env_file, str)
-            and env_file.endswith('.yml')
-            and os.path.exists(env_file)
-            and os.path.isfile(env_file)
+        valid_file = all(
+            isinstance(env_file, str),
+            env_file.endswith('.yml'),
+            os.path.exists(env_file),
+            os.path.isfile(env_file),
             )
         
         self.log.debug("<valid_file>: {}".format(valid_file))
@@ -244,7 +231,12 @@ class CondaManager():
         
         return
     
-    def set_conda_exec(self, conda_exec):
+    @property
+    def conda_exec(self):
+        return self._conda_exec
+    
+    @conda_exec.setter
+    def conda_exec(self, conda_exec):
         """
         Sets path to Miniconda 'conda' executable.
         """
@@ -329,32 +321,12 @@ class CondaManager():
         self.log.debug("<env_folder>: {}".format(self._env_folder))
         return
     
-    def get_install_folder(self):
-        return self._install_folder
-    
-    def get_miniconda_base_web_link(self):
-        return self._miniconda_base_web_link
-    
-    def get_miniconda_web_file(self):
-        return self._miniconda_web_file
-    
-    def get_miniconda_download_link(self):
-        return self._miniconda_download_link
     
     def get_miniconda_install_file(self):
         return self._miniconda_install_file
     
-    def get_miniconda_install_folder(self):
-        return self._miniconda_install_folder
-    
-    def get_env_file(self):
-        return self._env_file
-    
     def get_env_reference_file(self):
         return self._env_reference_file
-    
-    def get_conda_exec(self):
-        return self._conda_exec
     
     def get_env_name(self):
         return self._env_name
@@ -380,7 +352,7 @@ class CondaManager():
         """
         self.log.debug("checking if miniconda install exists")
         
-        list_dir = os.listdir(self.get_install_folder())
+        list_dir = os.listdir(self.install_folder)
         dirlist = [a for a in list_dir if os.path.isdir(a)]
         self.log.debug("<dirlist>: {}".format("\n".join(dirlist)))
         
@@ -411,13 +383,13 @@ class CondaManager():
         """
         
         self.log.info("* Downloading Miniconda...")
-        self.log.debug("url: {}".format(self.get_miniconda_download_link()))
+        self.log.debug("url: {}".format(self.miniconda_download_link))
         self.log.debug(
             "destination: {}".format(self.get_miniconda_install_file())
             )
         
         commons.download_file(
-            self.get_miniconda_download_link(),
+            self.miniconda_download_link,
             self.get_miniconda_install_file()
             )
         
@@ -436,7 +408,7 @@ class CondaManager():
                 self.get_miniconda_install_file(),
                 '-b',
                 '-p',
-                self.get_miniconda_install_folder()
+                self.miniconda_install_folder
                 ]
             )
         
@@ -452,7 +424,7 @@ class CondaManager():
                     "/InstallationType=JustMe",
                     "/RegisterPython=0",
                     "/S",
-                    "/D=" + self.get_miniconda_install_folder()
+                    "/D=" + self.miniconda_install_folder
                     ]
                 )
         
@@ -478,7 +450,7 @@ class CondaManager():
             # https://stackoverflow.com/questions/28612500/why-anaconda-does-not-recognize-conda-command
             self.set_conda_exec(
                 os.path.join(
-                    self.get_miniconda_install_folder(),
+                    self.miniconda_install_folder,
                     'Scripts',
                     'conda.exe'
                     )
@@ -486,7 +458,7 @@ class CondaManager():
             
             self.set_env_python_exec(
                 os.path.join(
-                    self.get_miniconda_install_folder(),
+                    self.miniconda_install_folder,
                     'python.exe'
                     )
                 )
@@ -494,7 +466,7 @@ class CondaManager():
         else:  # UNIX systems
             self.set_conda_exec(
                 os.path.join(
-                    self.get_miniconda_install_folder(),
+                    self.miniconda_install_folder,
                     'bin',
                     'conda'
                     )
@@ -502,7 +474,7 @@ class CondaManager():
             
             self.set_env_python_exec(
                 os.path.join(
-                    self.get_miniconda_install_folder(),
+                    self.miniconda_install_folder,
                     'bin',
                     'python'
                     )
@@ -526,7 +498,7 @@ class CondaManager():
         self.log.debug("installing package: {}".format(package))
         
         exec_line = "{} install -y {}".format(
-            self.get_conda_exec(),
+            self.conda_exec,
             package
             )
         
@@ -548,7 +520,7 @@ class CondaManager():
         package_name = package.split('=')[0]
         
         exec_line = "{} list {}".format(
-            self.get_conda_exec(),
+            self.conda_exec,
             package_name
             )
         
@@ -571,8 +543,8 @@ class CondaManager():
         
         # defines command to create environment from .yml file
         exec_line = '{} env create -f {}'.format(
-            self.get_conda_exec(),
-            self.get_env_file()
+            self.conda_exec,
+            self.env_file
             )
         
         self.log.debug("<exec_line>: {}".format(exec_line))
@@ -583,7 +555,7 @@ class CondaManager():
         
         self.set_env_folder(
             os.path.join(
-                self.get_miniconda_install_folder(),
+                self.miniconda_install_folder,
                 'envs',
                 self.get_env_name()
                 )
@@ -624,7 +596,7 @@ class CondaManager():
         
         # confirm environment was installed correctly
         exec_line = "{} list -n {}".format(
-            self.get_conda_exec(),
+            self.conda_exec,
             self.get_env_name()
             )
         
@@ -646,11 +618,11 @@ class CondaManager():
         
         exec_line = " ".join(
             [
-                self.get_conda_exec(),
+                self.conda_exec,
                 'develop',
                 '-p',
                 self.get_env_folder(),
-                self.get_install_folder()
+                self.install_folder,
                 ]
             )
         
@@ -673,7 +645,7 @@ class CondaManager():
         self.log.info("* Removing Miniconda Environment")
         
         exec_line = '{} remove -vy --name {} --all'.format(
-            self.get_conda_exec(),
+            self.conda_exec,
             self.get_env_name()
             )
         
