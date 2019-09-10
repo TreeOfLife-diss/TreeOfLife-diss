@@ -450,12 +450,10 @@ class CondaManager(object):
                 )
         
         else:  # UNIX systems
-            self.set_conda_exec(
-                os.path.join(
-                    self.miniconda_install_folder,
-                    'bin',
-                    'conda'
-                    )
+            self.conda_exec = os.path.join(
+                self.miniconda_install_folder,
+                'bin',
+                'conda'
                 )
             
             self.env_python_exec = os.path.join(
