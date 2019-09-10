@@ -346,22 +346,24 @@ class CondaManager(object):
         
         miniconda_folder = self._get_miniconda_folder(dirlist, folder)
         
-        if miniconda_folder:
-            if len(miniconda_folder) == 1:
-                self.log.debug("returning: {}".format(miniconda_folder[0]))
-                return miniconda_folder[0]
-            
-            else:
-                self.log.info("More than one Miniconda folder found")
-                self.log.info("You may wish to remove them manually")
-                self.log.info(messages.something_wrong)
-                self.log.info(messages.abort)
-                commons.sys_exit()
-                return
+        n_matches = len(miniconda_folder)
         
-        else:
+        if n_matches == 0:
+            # no Miniconda folders found
             self.log.debug("returning False")
             return False
+        
+        elif n_matches == 1:
+            self.log.debug("returning: {}".format(miniconda_folder[0]))
+            return miniconda_folder[0]
+            
+        elif n_matches > 1:
+            self.log.info("More than one Miniconda folder found")
+            self.log.info("You may wish to remove them manually")
+            self.log.info(messages.something_wrong)
+            self.log.info(messages.abort)
+            commons.sys_exit()
+            return
     
     def _get_all_subfolders(folder):
         list_dir = os.listdir(folder_regex)
