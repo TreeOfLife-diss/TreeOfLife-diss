@@ -342,13 +342,9 @@ class CondaManager(object):
         """
         self.log.debug("checking if miniconda install exists")
         
-        list_dir = os.listdir(self.install_folder)
-        dirlist = [a for a in list_dir if os.path.isdir(a)]
-        self.log.debug("<dirlist>: {}".format("\n".join(dirlist)))
+        dirlist = self._get_all_subfolders(self.install_folder)
         
-        mask = re.compile(folder)
-        miniconda_folder = [a for a in dirlist if mask.match(a)]
-        self.log.debug("<miniconda_folder>: {}".format(miniconda_folder))
+        miniconda_folder = self._get_miniconda_folder(dirlist, folder)
         
         if miniconda_folder:
             if len(miniconda_folder) == 1:
@@ -366,6 +362,18 @@ class CondaManager(object):
         else:
             self.log.debug("returning False")
             return False
+    
+    def _get_all_subfolders(folder):
+        list_dir = os.listdir(folder_regex)
+        dirlist = [a for a in list_dir if os.path.isdir(a)]
+        self.log.debug("<dirlist>: {}".format("\n".join(dirlist)))
+        return dirlist
+    
+    def _get_miniconda_folder(dirlist, folderregex):
+        mask = re.compile(folderregex)
+        miniconda_folder = [a for a in dirlist if mask.match(a)]
+        self.log.debug("<miniconda_folder>: {}".format(miniconda_folder))
+        return miniconda_folder
     
     def download_miniconda(self):
         """
