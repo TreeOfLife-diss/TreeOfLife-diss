@@ -41,6 +41,52 @@ import messages
 import commons
 
 
+class CondaCommands(object):
+    
+    def __new__(cls):
+        if system.platform in ("Linux", "MacOSX"):
+            return CondaLinux()
+        elif platform in ("Windows"):
+            return CondaWindows()
+        else:
+            return CondaLinux()
+
+
+class CondaLinux(object):
+    def __init__(self):
+        return
+    
+    def get_nstall_command(self, install_file, install_folder):
+        return "{} -b -p {}".format(install_file, install_folder)
+    
+    def get_conda_exec(self, install_folder):
+        return os.path.join(install_folder, 'bin', 'conda')
+    
+    def get_env_python_exec(self, install_folder):
+        return os.path.join(install_folder, 'bin', 'python')
+
+
+class CondaWindows(object):
+    def __init__(self):
+        return
+    
+    def get_install_command(self, install_file, install_folder):
+        cmd = "{} /InstallationType=JustMe /RegisterPython=0 /S /D={}".format(
+            install_file,
+            install_folder,
+            )
+        return cmd
+    
+    def get_conda_exec(self, install_folder):
+        # https://stackoverflow.com/questions/37117571/where-does-anaconda-python-install-on-windows
+        # https://stackoverflow.com/questions/44597662/conda-command-is-not-recognized-on-windows-10
+        # https://stackoverflow.com/questions/28612500/why-anaconda-does-not-recognize-conda-command
+        return os.path.join(install_folder, 'Scripts', 'conda.exe')
+    
+    def get_env_python_exec(self, install_folder):
+        # https://docs.anaconda.com/anaconda/user-guide/tasks/integration/python-path/
+        return os.path.join(install_folder, 'python.exe')
+
 class CondaManager(object):
     """
     Manages Miniconda installation and ENV configuration.
@@ -58,6 +104,16 @@ class CondaManager(object):
         """
         
         self.log = logger.InstallLogger(__name__).gen_logger()
+        
+        if system.platform not in ("Linux", "MacOSX", "Windows"):
+            warning_message = (
+                "* WARNING * Your platform is not Linux, MacOSX or Windows\n"
+                "* WARNING * Miniconda installation command will be\n"
+                "* WARNING * same as if this was a UNIX machine.\n"
+                "* WARNING * if the installation fails please contact us for support\n"
+                )
+            self.log.info(warning_message)
+        
         
         self.install_folder = cwd or os.getcwd()
         
@@ -86,6 +142,8 @@ class CondaManager(object):
         
         self.env_nane = 'treeoflife'
         self.env_file = env
+        
+        self.conda_commands = CondaCommands()
         
         return
     
@@ -384,13 +442,11 @@ class CondaManager(object):
         
         self.log.info("* Downloading Miniconda...")
         self.log.debug("url: {}".format(self.miniconda_download_link))
-        self.log.debug(
-            "destination: {}".format(self.miniconda_install_file)
-            )
+        self.log.debug("destination: {}".format(self.miniconda_install_file))
         
         commons.download_file(
             self.miniconda_download_link,
-            self.miniconda_install_file
+            self.miniconda_install_file,
             )
         
         commons.change_permissions_777(self.miniconda_install_file)
@@ -403,40 +459,10 @@ class CondaManager(object):
         Routine to install Miniconda.
         """
         
-        unix_exec_line = " ".join(
-            [
-                self.miniconda_install_file,
-                '-b',
-                '-p',
-                self.miniconda_install_folder
-                ]
+        exec_line = self.conda_commands.get_install_command(
+            self.miniconda_install_file,
+            self.miniconda_install_folder,
             )
-        
-        # prepares execution line
-        if system.platform in ("Linux", "MacOSX"):
-            exec_line = unix_exec_line
-        
-        elif system.platform in ("Windows"):
-            # https://conda.io/docs/user-guide/install/windows.html
-            exec_line = " ".join(
-                [
-                    self.miniconda_install_file,
-                    "/InstallationType=JustMe",
-                    "/RegisterPython=0",
-                    "/S",
-                    "/D=" + self.miniconda_install_folder
-                    ]
-                )
-        
-        else:
-            warning_message = """
-* WARNING * Your platform is not Linux, MacOSX or Windows
-* WARNING * Miniconda installation command will be
-* WARNING * same as if this was a UNIX machine.
-* WARNING * if the installation fails please contact us for support
-"""
-            self.log.info(warning_message)
-            exec_line = unix_exec_line
         
         self.log.debug("<exec_line>: {}".format(exec_line))
         
@@ -444,33 +470,8 @@ class CondaManager(object):
         commons.sub_call(exec_line)
         
         # sets miniconda conda and python exec files
-        if system.platform in ("Windows"):
-            # https://stackoverflow.com/questions/37117571/where-does-anaconda-python-install-on-windows
-            # https://stackoverflow.com/questions/44597662/conda-command-is-not-recognized-on-windows-10
-            # https://stackoverflow.com/questions/28612500/why-anaconda-does-not-recognize-conda-command
-            self.conda_exec = os.path.join(
-                self.miniconda_install_folder,
-                'Scripts',
-                'conda.exe'
-                )
-            
-            self.env_python_exec = os.path.join(
-                self.miniconda_install_folder,
-                'python.exe'
-                )
-        
-        else:  # UNIX systems
-            self.conda_exec = os.path.join(
-                self.miniconda_install_folder,
-                'bin',
-                'conda'
-                )
-            
-            self.env_python_exec = os.path.join(
-                self.miniconda_install_folder,
-                'bin',
-                'python',
-                )
+        self.conda_exec = self.conda_command.get_conda_exec(self.miniconda_install_folder)
+        self.env_python_exec = self.conda_command.get_env_python_exec(self.miniconda_install_folder)
         
         return
     
@@ -551,19 +552,7 @@ class CondaManager(object):
             self.env_name,
             )
         
-        if system.platform in ("Windows"):
-            # https://docs.anaconda.com/anaconda/user-guide/tasks/integration/python-path/
-            self.env_python_exec = os.path.join(
-                self.env_folder,
-                'python.exe',
-                )
-        
-        else:  # UNIX systems
-            self.env_python_exec = os.path.join(
-                self.env_folder,
-                'bin',
-                'python',
-                )
+        self.env_python_exec = self.conda_command.get_env_python_exec(self.env_folder)
         
         # self.set_python_version_folder()
         
@@ -643,4 +632,6 @@ class CondaManager(object):
 if __name__ == "__main__":
     
     print('I am Tree-of-Life')
-    cm = CondaManager()
+    # ~ cm = CondaManager()
+    cm = CondaCommands()
+    print(type(cm))
