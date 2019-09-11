@@ -42,12 +42,14 @@ if python_version < 3:
     import urllib as url
     url_not_found_error = IOError
     user_input = raw_input
+    filenotfounderror = IOError
 
 elif python_version == 3:
     import urllib
     import urllib.request as url
     url_not_found_error = urllib.error.URLError
     user_input = input
+    filenotfounderror = FileNotFoundError
 
 else:
     log.info(messages.unknown_python)
@@ -221,7 +223,7 @@ def change_permissions_777(file_):
     
     try:
         os.chmod(file_, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
-    except FileNotFoundError as e:
+    except filenotfounderror as e:
         log.exception(e)
         log.info("* ERROR * File '{}' not found!".format(file_))
         log.info(messages.something_wrong)
@@ -283,7 +285,7 @@ def sub_call(exec_line):
     -------
     The output of execution.
     """
-    log.info("* Executing ...{}".format(exec_line))
+    log.info("* Executing ...: {}".format(exec_line))
     args = exec_line.strip().split()
     log.debug("args passed: {}".format(args))
     
