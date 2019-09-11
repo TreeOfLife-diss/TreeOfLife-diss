@@ -23,7 +23,7 @@ Specific variables for the host project.
 
 # CONFIGURE ACCORDING TO THE HOST PROJECT
 # host project name, this will be displayed in messages and throughout
-software_name = "TreeOfLife"
+software_name = "TreeOfLife-diss"
 
 # host project version
 software_version = (1, 0, 0)

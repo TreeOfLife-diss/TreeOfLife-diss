@@ -2,3 +2,5 @@
 name: treeoflife
 dependencies:
   - python=3
+  - flake8
+  - pytest
