@@ -23,15 +23,15 @@ Informative messages for the installation and update processes.
 import os
 import textwrap
 
-import host_project_vars
-import system
-import executables
+from . import ToLHPV
+from . import ToLSYSTEM
+from . import ToLEXEC
 
 # provide a link and e-mail with further documentation on the install process
-install_wiki = host_project_vars.install_wiki
-mailist = host_project_vars.mailist
-software_name = host_project_vars.software_name
-min_space_allowed = host_project_vars.min_space_allowed
+install_wiki = ToLHPV.install_wiki
+mailist = ToLHPV.mailist
+software_name = ToLHPV.software_name
+min_space_allowed = ToLHPV.min_space_allowed
 
 # configure textwrapper
 
@@ -77,13 +77,13 @@ query = "-> provide a valid option: "
 big_query = """
 - [Press ENTER to continue]
 - Type any '{}' to abort
-""".format(", ".join(system.deny))
+""".format(", ".join(ToLSYSTEM.deny))
 
 gen_files_msg_head = _formats_main_title("Generated executable files")
 
 
 list_of_files = ""
-for file_ in executables.executable_files.keys():
+for file_ in ToLEXEC.executable_files.keys():
     list_of_files += "-> {}\n".format(os.path.join('bin', file_))
 
 gen_files_msg_tail = _formats_message_body(

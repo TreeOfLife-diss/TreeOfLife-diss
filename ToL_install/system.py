@@ -23,7 +23,7 @@ installation and updating.
 # with this library. If not, see <http://www.gnu.org/licenses/>.
 import platform as pltfrm
 import os
-import host_project_vars
+from . import ToLHPV
 
 # about the default installation folder
 _file_path = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
@@ -38,10 +38,10 @@ bits = "x86_64" if (pltfrm.machine().endswith('64')) else "x86"
 exec_file_extension = _executable_file_extensions[platform]
 
 # about conda env
-latest_env_file = os.path.join(_file_path, host_project_vars.env_file)
+latest_env_file = os.path.join(_file_path, ToLHPV.env_file)
 default_miniconda_folder = os.path.join(
     installation_folder,
-    host_project_vars.miniconda_folder
+    ToLHPV.miniconda_folder
     )
 
 with open(latest_env_file, 'r') as f:

@@ -20,7 +20,7 @@ Defines executable files.
 #
 # You should have received a copy of the this license along
 # with this library. If not, see <http://www.gnu.org/licenses/>.
-import system
+from . import ToLSYSTEM
 
 # interesting readings:
 # https://stackoverflow.com/questions/6943208/activate-a-virtualenv-with-a-python-script
@@ -227,9 +227,9 @@ commons.sys_exit()
 """
 
 # executable scripts file names and extensions
-exec1 = "exec_1{}".format(system.exec_file_extension)
-exec2 = "exec_2{}".format(system.exec_file_extension)
-updatescript = "update{}".format(system.exec_file_extension)
+exec1 = "exec_1{}".format(ToLSYSTEM.exec_file_extension)
+exec2 = "exec_2{}".format(ToLSYSTEM.exec_file_extension)
+updatescript = "update{}".format(ToLSYSTEM.exec_file_extension)
 
 # dictionary listing the executable scripts
 # keys are file names, values the string with code
