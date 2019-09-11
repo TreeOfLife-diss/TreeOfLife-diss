@@ -25,6 +25,7 @@ import sys
 
 from . import host_project_vars
 
+
 log_file_name = host_project_vars.installation_log_name
 
 
@@ -36,7 +37,7 @@ def get_logger(name):
         logger.setLevel(logging.DEBUG)
         
         # create a file handler
-        debug_ = logging.FileHandler(log_file_name)
+        debug_ = logging.FileHandler(log_file_name, mode='w')
         debug_.setLevel(logging.DEBUG)
         ch = logging.StreamHandler(sys.stdout)
         ch.setLevel(logging.INFO)
