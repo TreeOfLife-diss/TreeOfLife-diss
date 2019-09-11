@@ -23,47 +23,31 @@ Logger module using Python Logging.
 import logging
 import sys
 
+from . import host_project_vars
 
-class InstallLogger():
+log_file_name = host_project_vars.installation_log_name
 
-    log_file_name = 'treeoflife.log'
-    
-    def __init__(self, name, log_file_name=None):
-        """
-        Manages the logging system. Writes INFO to stdout and log file
-        and DEBUG to log file.
-        
-        Parameters:
-        
-            - name (str): optimal __name__ var
-            
-            - log_file_name (str): the name of the log file
-        """
-        
-        if log_file_name:
-            InstallLogger.log_file_name = log_file_name
-        
-        self.log_file = InstallLogger.log_file_name
-        self.name = name
-        
-        return
-    
-    def gen_logger(self):
+
+def get_logger(name):
         """
         Starts, configures and returns logger.
         """
-        logger = logging.getLogger(self.name)
+        logger = logging.getLogger(name)
         logger.setLevel(logging.DEBUG)
         
         # create a file handler
-        debug_ = logging.FileHandler(self.log_file)
+        debug_ = logging.FileHandler(log_file_name)
         debug_.setLevel(logging.DEBUG)
         ch = logging.StreamHandler(sys.stdout)
         ch.setLevel(logging.INFO)
         
         # create a logging format
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - \
-%(filename)s:%(name)s:%(funcName)s:%(lineno)d - %(message)s')
+        formatter = logging.Formatter(
+            '%(asctime)s - '
+            '%(levelname)s - '
+            '%(filename)s:%(name)s:%(funcName)s:%(lineno)d - '
+            '%(message)s'
+            )
         debug_.setFormatter(formatter)
         
         # add the handlers to the logger
