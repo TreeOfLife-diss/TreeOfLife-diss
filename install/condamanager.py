@@ -56,7 +56,7 @@ class CondaLinux(object):
     def __init__(self):
         return
     
-    def get_nstall_command(self, install_file, install_folder):
+    def get_install_command(self, install_file, install_folder):
         return "{} -b -p {}".format(install_file, install_folder)
     
     def get_conda_exec(self, install_folder):
@@ -423,13 +423,13 @@ class CondaManager(object):
             commons.sys_exit()
             return
     
-    def _get_all_subfolders(folder):
-        list_dir = os.listdir(folder_regex)
+    def _get_all_subfolders(self, folder):
+        list_dir = os.listdir(folder)
         dirlist = [a for a in list_dir if os.path.isdir(a)]
         self.log.debug("<dirlist>: {}".format("\n".join(dirlist)))
         return dirlist
     
-    def _get_miniconda_folder(dirlist, folderregex):
+    def _get_miniconda_folder(self, dirlist, folderregex):
         mask = re.compile(folderregex)
         miniconda_folder = [a for a in dirlist if mask.match(a)]
         self.log.debug("<miniconda_folder>: {}".format(miniconda_folder))
@@ -470,8 +470,8 @@ class CondaManager(object):
         commons.sub_call(exec_line)
         
         # sets miniconda conda and python exec files
-        self.conda_exec = self.conda_command.get_conda_exec(self.miniconda_install_folder)
-        self.env_python_exec = self.conda_command.get_env_python_exec(self.miniconda_install_folder)
+        self.conda_exec = self.conda_commands.get_conda_exec(self.miniconda_install_folder)
+        self.env_python_exec = self.conda_commands.get_env_python_exec(self.miniconda_install_folder)
         
         return
     
@@ -552,7 +552,7 @@ class CondaManager(object):
             self.env_name,
             )
         
-        self.env_python_exec = self.conda_command.get_env_python_exec(self.env_folder)
+        self.env_python_exec = self.conda_commands.get_env_python_exec(self.env_folder)
         
         # self.set_python_version_folder()
         

@@ -184,15 +184,15 @@ if install_choice == "1":  # installs Miniconda and Python Environment
     
     # registers installation variables
     install_option = 1
-    conda_exec = miniconda_handler.get_conda_exec()
-    python_exec = miniconda_handler.get_env_python_exec()
-    env_file = miniconda_handler.get_env_file()
-    env_name = miniconda_handler.get_env_name()
-    env_version = miniconda_handler.get_env_version()
-    miniconda_folder = miniconda_handler.get_miniconda_install_folder()
+    conda_exec = miniconda_handler.conda_exec
+    python_exec = miniconda_handler.env_python_exec
+    env_file = miniconda_handler.env_file
+    env_name = miniconda_handler.env_name
+    env_version = miniconda_handler.env_version
+    miniconda_folder = miniconda_handler.miniconda_install_folder
     
     # cleans
-    miniconda_install_file = miniconda_handler.get_miniconda_install_file()
+    miniconda_install_file = miniconda_handler.miniconda_install_file
     os.remove(miniconda_install_file)
     log.debug("removed: {}".format(miniconda_install_file))
 
