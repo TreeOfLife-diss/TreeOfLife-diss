@@ -53,13 +53,20 @@ with open(latest_env_file, 'r') as f:
 
 
 # about downloading Miniconda
-base_miniconda_web_link = "https://repo.continuum.io/miniconda/"
+base_miniconda_weblink = "https://repo.continuum.io/miniconda/"
 _miniconda_file_extensions = {
     "Linux": "sh",
     "MacOSX": "sh",
-    "Windows": "exe"
+    "Windows": "exe",
     }
 miniconda_file_extension = _miniconda_file_extensions[platform]
+
+miniconda_installer_weblink = "Miniconda3-latest-{}-{}.{}".format(
+    platform,
+    bits,
+    miniconda_file_extension,
+    )
+
 
 
 # other variables

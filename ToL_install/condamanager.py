@@ -90,6 +90,49 @@ class CondaWindows(object):
         return os.path.join(install_folder, 'python.exe')
 
 
+class MinicondaWebLinks(object):
+    def __init__(self):
+        self.base_weblink = ToLSYSTEM.base_miniconda_weblink
+        
+        self.miniconda_installer_weblink = \
+            ToLSYSTEM.miniconda_installer_weblink
+        
+        
+       
+        
+        
+        return
+    
+    @property
+    def base_weblink(self):
+        """
+        base web link where to download Miniconda from.
+        
+        Example: https://repo.continuum.io/miniconda/
+        """
+        return self._base_weblink
+    
+    @base_weblink.setter
+    def base_weblink(self, link):
+        # TODO: set some ping check here?
+        self._base_weblink = link
+        debug_msg = "<base_weblink> set to: {}"
+        log.debug(debug_msg.format(self._base_weblink))
+    
+    @property
+    def miniconda_installer_weblink(self):
+        """
+        Miniconda download file
+        """
+        return self._miniconda_installer_weblink
+        
+    @miniconda_installer_weblink.setter
+    def miniconda_web_file(self, file_name):
+        self._miniconda_installer_weblink = file_name
+        debug_msg = "<miniconda_installer_weblink> set to: {}"
+        log.debug(debug_msg.format(self._miniconda_installer_weblink))
+    
+
 class CondaManager(object):
     """
     Manages Miniconda installation and ENV configuration.
@@ -117,13 +160,11 @@ class CondaManager(object):
         
         self.install_folder = cwd or os.getcwd()
         
-        self.miniconda_base_web_link = system.base_miniconda_web_link
+        self.minicondaweblinks = MinicondaWebLinks()
         
-        self.miniconda_web_file = "Miniconda3-latest-{}-{}.{}".format(
-            system.platform,
-            system.bits,
-            system.miniconda_file_extension
-            )
+        # ~ self.miniconda_base_web_link = system.base_miniconda_web_link
+        
+
         
         self.miniconda_download_link = urlparse.urljoin(
             self.miniconda_base_web_link,
@@ -158,33 +199,9 @@ class CondaManager(object):
     def install_folder(self, folder):
         self._install_folder = folder
     
-    @property
-    def miniconda_base_web_link(self):
-        """
-        base web link where to download Miniconda from.
-        
-        Example: https://repo.continuum.io/miniconda/
-        """
-        return self._miniconda_base_web_link
+
     
-    @miniconda_base_web_link.setter
-    def miniconda_base_web_link(self, link):
-        self._miniconda_base_web_link = link
-        debug_msg = "<miniconda_web_base_link> set to: {}"
-        log.debug(debug_msg.format(self._miniconda_base_web_link))
-    
-    @property
-    def miniconda_web_file(self):
-        """
-        Miniconda download file
-        """
-        return self._miniconda_web_file
-        
-    @miniconda_web_file.setter
-    def miniconda_web_file(self, file_name):
-        self._miniconda_web_file = file_name
-        debug_msg = "<miniconda_web_file> set to: {}"
-        log.debug(debug_msg.format(self._miniconda_web_file))
+
     
     @property
     def miniconda_download_link(self):
