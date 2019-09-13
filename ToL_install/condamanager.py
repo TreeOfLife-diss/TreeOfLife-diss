@@ -24,21 +24,22 @@ import sys
 import os
 import re
 
-python_version = sys.version_info[0]
-if python_version == 2:
-    import urlparse
+from . import (
+    ToLHPV,
+    log,
+    ToLSYSTEM,
+    ToLMSG,
+    ToLEXEC,
+    ToLCOMM,
+    )
 
-elif python_version == 3:
-    import urllib.parse as urlparse
-
-else:
-    sys.exit("* ABORTING * You are using a Python '{}', \
-you should use versions 2 or 3.".format(python_version))
-
-import logger
-import system
-import messages
-import commons
+from . import (
+    urlparse,
+    url,
+    url_not_found_error,
+    filenotfounderror,
+    user_input,
+    )
 
 
 class CondaCommands(object):

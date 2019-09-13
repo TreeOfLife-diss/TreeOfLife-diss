@@ -28,11 +28,11 @@ import shutil
 import ctypes
 
 from . import (
-    log,
     ToLHPV,
+    log,
     ToLSYSTEM,
-    ToLMSG,
     ToLEXEC,
+    ToLMSG,
     )
 
 from . import (

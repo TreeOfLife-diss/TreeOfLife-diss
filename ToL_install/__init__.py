@@ -1,14 +1,11 @@
 import sys
 import traceback
 
-from . import logger
 from . import host_project_vars as ToLHPV
+from . import logger
 from . import system as ToLSYSTEM
 from . import executables as ToLEXEC
 from . import messages as ToLMSG
-from . import commons as ToLCOMM
-from . import condamanager as ToLCM
-
 
 log = logger.get_logger(__name__)
 
@@ -52,3 +49,6 @@ except (NameError, ModuleNotFoundError):
 except Exception:
     log.debug(traceback.format_exc())
     something_wrong_with_python_version()
+
+from . import commons as ToLCOMM
+from . import condamanager as ToLCM

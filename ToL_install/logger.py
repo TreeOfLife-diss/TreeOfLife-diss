@@ -23,10 +23,10 @@ Logger module using Python Logging.
 import logging
 import sys
 
-from . import host_project_vars
+from . import ToLHPV
 
 
-log_file_name = host_project_vars.installation_log_name
+log_file_name = ToLHPV.installation_log_name
 
 
 def get_logger(name):
