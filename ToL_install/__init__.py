@@ -12,14 +12,7 @@ log = logger.get_logger(__name__)
 python_version = sys.version_info[0]
 log.debug("* Python version: {}".format(python_version))
 
-# could use try: except: though fill this clarifies intentions
-if python_version == 2:
-    user_input = raw_input
-
-elif python_version == 3:
-    user_input = input
-
-else:
+if python_version not in (2, 3):
     log.info(ToLMSG.unknown_python)
     log.info("* You are running Python version: {}".format(python_version))
     _name = ToLHPV.software_name
@@ -28,3 +21,8 @@ else:
     log.info(ToLMSG.abort)
     user_input(ToLMSG.terminate)
     sys.exit(1)
+
+try:
+    user_input = raw_input
+except NameError:
+    user_input = input
