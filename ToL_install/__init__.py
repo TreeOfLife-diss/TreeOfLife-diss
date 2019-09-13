@@ -3,6 +3,7 @@ import traceback
 
 from . import host_project_vars as ToLHPV
 from . import logger
+from .logger import LogFormatter
 from . import system as ToLSYSTEM
 from . import executables as ToLEXEC
 from . import messages as ToLMSG

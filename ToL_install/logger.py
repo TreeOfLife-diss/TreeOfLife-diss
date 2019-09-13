@@ -22,6 +22,7 @@ Logger module using Python Logging.
 # with this library. If not, see <http://www.gnu.org/licenses/>.
 import logging
 import sys
+import textwrap
 
 from . import ToLHPV
 
@@ -56,3 +57,50 @@ def get_logger(name):
         logger.addHandler(ch)
         
         return logger
+
+class LogFormatter:
+    """
+    Provides common methods for Formatter log classes.
+    
+    Attributes
+    ----------
+    stamp : :obj:`str`
+        Defaults to None.
+        Defines the type of stamp used in log messages
+        according to module's errprefixes var.
+    """
+    def __init__(
+            self,
+            msg,
+            *args,
+            stamp=None,
+            width=80,
+            **kwargs
+            ):
+        
+        self.msg = str(msg)
+        self.args = args
+        self.stamp = (f"* {stamp.upper()} * "if stamp else '')
+        self.width = width
+        self.kwargs = kwargs
+        
+        self.makelog()
+    
+    def __str__(self):
+        return self.logmsg.format(*self.args, **self.kwargs)
+    
+    def makelog(self):
+        
+        _ = textwrap.dedent(self.msg)
+        _ = _.splitlines()
+        _ = [textwrap.wrap(s, width=self.width) for s in _]
+        
+        m = []
+        for l in _:
+            if l:
+                for s in l:
+                    m.append(f"{self.stamp}{s}")
+        
+        self.logmsg = "\n".join(m)
+        
+        return

@@ -27,6 +27,7 @@ import re
 from . import (
     ToLHPV,
     log,
+    LogFormatter,
     ToLSYSTEM,
     ToLMSG,
     ToLEXEC,
@@ -88,6 +89,7 @@ class CondaWindows(object):
         # https://docs.anaconda.com/anaconda/user-guide/tasks/integration/python-path/
         return os.path.join(install_folder, 'python.exe')
 
+
 class CondaManager(object):
     """
     Manages Miniconda installation and ENV configuration.
@@ -104,17 +106,14 @@ class CondaManager(object):
                 environment.
         """
         
-        self.log = logger.InstallLogger(__name__).gen_logger()
-        
         if system.platform not in ("Linux", "MacOSX", "Windows"):
-            warning_message = (
-                "* WARNING * Your platform is not Linux, MacOSX or Windows\n"
-                "* WARNING * Miniconda installation command will be\n"
-                "* WARNING * same as if this was a UNIX machine.\n"
-                "* WARNING * if the installation fails please contact us for support\n"
+            warmsg = (
+                "Your platform is not Linux, MacOSX or Windows. "
+                "Miniconda installation command will be "
+                "same as if this was a UNIX machine. "
+                "If the installation fails please contact us for support."
                 )
-            self.log.info(warning_message)
-        
+            log.info(LogFormatter(warmsg, stamp='warning'))
         
         self.install_folder = cwd or os.getcwd()
         
@@ -172,7 +171,7 @@ class CondaManager(object):
     def miniconda_base_web_link(self, link):
         self._miniconda_base_web_link = link
         debug_msg = "<miniconda_web_base_link> set to: {}"
-        self.log.debug(debug_msg.format(self._miniconda_base_web_link))
+        log.debug(debug_msg.format(self._miniconda_base_web_link))
     
     @property
     def miniconda_web_file(self):
@@ -185,7 +184,7 @@ class CondaManager(object):
     def miniconda_web_file(self, file_name):
         self._miniconda_web_file = file_name
         debug_msg = "<miniconda_web_file> set to: {}"
-        self.log.debug(debug_msg.format(self._miniconda_web_file))
+        log.debug(debug_msg.format(self._miniconda_web_file))
     
     @property
     def miniconda_download_link(self):
@@ -195,7 +194,7 @@ class CondaManager(object):
     def miniconda_download_link(self, link):
         self._miniconda_download_link = link
         debug_msg = "<miniconda_download_link> set to: {}"
-        self.log.debug(debug_msg.format(self._miniconda_download_link))
+        log.debug(debug_msg.format(self._miniconda_download_link))
     
     @property
     def miniconda_install_file(self):
@@ -205,7 +204,7 @@ class CondaManager(object):
     def miniconda_install_file(self, exec_file):
         self._miniconda_install_file = exec_file
         debug_msg = "<miniconda_install_file> set to: {}"
-        self.log.debug(debug_msg.format(self._miniconda_install_file))
+        log.debug(debug_msg.format(self._miniconda_install_file))
     
     @property
     def miniconda_install_folder(self):
@@ -218,7 +217,7 @@ class CondaManager(object):
     def miniconda_install_folder(self, folder):
         self._miniconda_install_folder = folder
         debug_msg = "<miniconda_install_folder> set to: {}"
-        self.log.debug(debug_msg.format(self._miniconda_install_folder))
+        log.debug(debug_msg.format(self._miniconda_install_folder))
     
     @property
     def env_file(self):
@@ -238,12 +237,12 @@ class CondaManager(object):
         
         if env_file is None:
             self._env_file = None
-            self.log.debug("<env_file>: ".format(self._env_file))
+            log.debug("<env_file>: ".format(self._env_file))
             self.env_name = None
             self.env_version = None
             return
         
-        self.log.debug("reading env_file: {}".format(env_file))
+        log.debug("reading env_file: {}".format(env_file))
         
         valid_file = all((
             isinstance(env_file, str),
@@ -252,7 +251,7 @@ class CondaManager(object):
             os.path.isfile(env_file),
             ))
         
-        self.log.debug("<valid_file>: {}".format(valid_file))
+        log.debug("<valid_file>: {}".format(valid_file))
             
         if valid_file:
             
@@ -274,18 +273,18 @@ class CondaManager(object):
         
         elif not(env_file.endswith('.yml')):
             err_msg = "* ERROR * '{}' should have .yml extension"
-            self.log.info(err_msg.format(env_file))
+            log.info(err_msg.format(env_file))
             raise ValueError("Miniconda env file not valid")
         
         elif not(os.path.exists(env_file)):
-            self.log.info("* ERROR * '{}' does not exists.".format(env_file))
+            log.info("* ERROR * '{}' does not exists.".format(env_file))
             raise ValueError("Miniconda env file not valid")
         
         elif not(os.path.isfile(env_file)):
-            self.log.info("* ERROR * '{}' is not a file.".format(env_file))
+            log.info("* ERROR * '{}' is not a file.".format(env_file))
             raise ValueError("Miniconda env file not valid")
         
-        self.log.debug("<env_file>: {}".format(self._env_file))
+        log.debug("<env_file>: {}".format(self._env_file))
         
         return
     
@@ -301,15 +300,15 @@ class CondaManager(object):
         
         if not(os.path.exists(conda_exec)):
             err_msg = "* ERROR * conda exec file does NOT exist: {}"
-            self.log.info(err_msg.format(conda_exec))
-            self.log.info(messages.something_wrong)
-            self.log.info(messages.additional_help)
-            self.log.info(messages.abort)
+            log.info(err_msg.format(conda_exec))
+            log.info(messages.something_wrong)
+            log.info(messages.additional_help)
+            log.info(messages.abort)
             commons.sys_exit()
         
         self._conda_exec = conda_exec
         debug_msg = "Miniconda conda bin exec set to: {}"
-        self.log.debug(debug_msg.format(self._conda_exec))
+        log.debug(debug_msg.format(self._conda_exec))
     
         return
     
@@ -323,7 +322,7 @@ class CondaManager(object):
     @env_name.setter
     def env_name(self, name):
         self._env_name = name
-        self.log.debug("<env_name>: {}".format(self._env_name))
+        log.debug("<env_name>: {}".format(self._env_name))
         return
     
     @property
@@ -334,7 +333,7 @@ class CondaManager(object):
     @env_python_exec.setter
     def env_python_exec(self, python_exec):
         self._env_python_exec = python_exec
-        self.log.debug("<env_python_exec>: {}".format(self._env_python_exec))
+        log.debug("<env_python_exec>: {}".format(self._env_python_exec))
     
     @property
     def env_version(self):
@@ -351,22 +350,22 @@ class CondaManager(object):
         
         except TypeError as e:
             self._env_version = None
-            self.log.debug(e)
-            self.log.debug("<env_version>: None")
+            log.debug(e)
+            log.debug("<env_version>: None")
             return
         
         except ValueError as e:
-            self.log.info(
+            log.info(
                 "* ERROR * Python environment version"
                 "should be integer type"
                 )
-            self.log.info("* ERROR * env version not set")
-            self.log.debug(e)
+            log.info("* ERROR * env version not set")
+            log.debug(e)
             commons.sys_exit()
             return
         
         self._env_version = env_version
-        self.log.debug("<env_version>: {}".format(self._env_version))
+        log.debug("<env_version>: {}".format(self._env_version))
         return
     
     @property
@@ -380,16 +379,16 @@ class CondaManager(object):
         """
         
         if not(os.path.exists(env_folder)):
-            self.log.info(
+            log.info(
                 "* ERROR* folder does NOT exists: {}".format(env_folder)
                 )
-            self.log.info(messages.something_wrong)
-            self.log.info(messages.additional_help)
-            self.log.info(messages.abort)
+            log.info(messages.something_wrong)
+            log.info(messages.additional_help)
+            log.info(messages.abort)
             commons.sys_exit()
         
         self._env_folder = env_folder
-        self.log.debug("<env_folder>: {}".format(self._env_folder))
+        log.debug("<env_folder>: {}".format(self._env_folder))
         return
     
     def check_previous_miniconda_folder(self, folder='[M|m]iniconda.*'):
@@ -399,7 +398,7 @@ class CondaManager(object):
         
         Returns folder name, False otherwise.
         """
-        self.log.debug("checking if miniconda install exists")
+        log.debug("checking if miniconda install exists")
         
         dirlist = self._get_all_subfolders(self.install_folder)
         
@@ -409,31 +408,31 @@ class CondaManager(object):
         
         if n_matches == 0:
             # no Miniconda folders found
-            self.log.debug("returning False")
+            log.debug("returning False")
             return False
         
         elif n_matches == 1:
-            self.log.debug("returning: {}".format(miniconda_folder[0]))
+            log.debug("returning: {}".format(miniconda_folder[0]))
             return miniconda_folder[0]
             
         elif n_matches > 1:
-            self.log.info("More than one Miniconda folder found")
-            self.log.info("You may wish to remove them manually")
-            self.log.info(messages.something_wrong)
-            self.log.info(messages.abort)
+            log.info("More than one Miniconda folder found")
+            log.info("You may wish to remove them manually")
+            log.info(messages.something_wrong)
+            log.info(messages.abort)
             commons.sys_exit()
             return
     
     def _get_all_subfolders(self, folder):
         list_dir = os.listdir(folder)
         dirlist = [a for a in list_dir if os.path.isdir(a)]
-        self.log.debug("<dirlist>: {}".format("\n".join(dirlist)))
+        log.debug("<dirlist>: {}".format("\n".join(dirlist)))
         return dirlist
     
     def _get_miniconda_folder(self, dirlist, folderregex):
         mask = re.compile(folderregex)
         miniconda_folder = [a for a in dirlist if mask.match(a)]
-        self.log.debug("<miniconda_folder>: {}".format(miniconda_folder))
+        log.debug("<miniconda_folder>: {}".format(miniconda_folder))
         return miniconda_folder
     
     def download_miniconda(self):
@@ -441,9 +440,9 @@ class CondaManager(object):
         Downloads Miniconda installation file.
         """
         
-        self.log.info("* Downloading Miniconda...")
-        self.log.debug("url: {}".format(self.miniconda_download_link))
-        self.log.debug("destination: {}".format(self.miniconda_install_file))
+        log.info("* Downloading Miniconda...")
+        log.debug("url: {}".format(self.miniconda_download_link))
+        log.debug("destination: {}".format(self.miniconda_install_file))
         
         commons.download_file(
             self.miniconda_download_link,
@@ -451,7 +450,7 @@ class CondaManager(object):
             )
         
         commons.change_permissions_777(self.miniconda_install_file)
-        self.log.debug("permissions changed")
+        log.debug("permissions changed")
         
         return
     
@@ -465,7 +464,7 @@ class CondaManager(object):
             self.miniconda_install_folder,
             )
         
-        self.log.debug("<exec_line>: {}".format(exec_line))
+        log.debug("<exec_line>: {}".format(exec_line))
         
         # installs miniconda
         commons.sub_call(exec_line)
@@ -489,7 +488,7 @@ class CondaManager(object):
         
         # https://conda.io/docs/user-guide/tasks/manage-pkgs.html#installing-packages
         
-        self.log.debug("installing package: {}".format(package))
+        log.debug("installing package: {}".format(package))
         
         exec_line = "{} install -y {}".format(
             self.conda_exec,
@@ -498,11 +497,11 @@ class CondaManager(object):
         
         exec_output = commons.sub_call(exec_line).decode("utf-8").split('\n')
         
-        self.log.debug("\n".join(exec_output))
+        log.debug("\n".join(exec_output))
         
-        self.log.debug("package installaged")
+        log.debug("package installaged")
         
-        self.logs_package_installation(package)
+        logs_package_installation(package)
         
         return
     
@@ -520,7 +519,7 @@ class CondaManager(object):
         
         exec_output = commons.sub_call(exec_line).decode("utf-8").split('\n')
         
-        self.log.debug("\n".join(exec_output))
+        log.debug("\n".join(exec_output))
         
         return
     
@@ -530,10 +529,10 @@ class CondaManager(object):
         """
         
         if self.env_name is None:
-            self.log.debug("no environment to install... ignoring...")
+            log.debug("no environment to install... ignoring...")
             return
         
-        self.log.info("* Starts Miniconda Environment Installation")
+        log.info("* Starts Miniconda Environment Installation")
         
         # defines command to create environment from .yml file
         exec_line = '{} env create -f {}'.format(
@@ -541,7 +540,7 @@ class CondaManager(object):
             self.env_file
             )
         
-        self.log.debug("<exec_line>: {}".format(exec_line))
+        log.debug("<exec_line>: {}".format(exec_line))
         
         commons.sub_call(exec_line)
         
@@ -565,10 +564,10 @@ class CondaManager(object):
         """
         
         if self.env_name is None:
-            self.log.debug("no environment to install... ignoring...")
+            log.debug("no environment to install... ignoring...")
             return
         
-        self.log.info("* Registering environment...")
+        log.info("* Registering environment...")
         
         # confirm environment was installed correctly
         exec_line = "{} list -n {}".format(
@@ -579,7 +578,7 @@ class CondaManager(object):
         # https://stackoverflow.com/questions/606191/convert-bytes-to-a-string
         installed_env = commons.sub_call(exec_line).decode("utf-8").split('\n')
         
-        self.log.debug("\n".join(installed_env))
+        log.debug("\n".join(installed_env))
         
         return
     
@@ -604,8 +603,8 @@ class CondaManager(object):
         
         result = commons.sub_call(exec_line).decode("utf-8").split('\n')
         
-        self.log.debug("\n".join(result))
-        self.log.debug("Host project folder added to site-packges")
+        log.debug("\n".join(result))
+        log.debug("Host project folder added to site-packges")
     
         return
     
@@ -615,10 +614,10 @@ class CondaManager(object):
         """
         
         if self.env_name is None:
-            self.log.debug("no environment to remove... ignoring...")
+            log.debug("no environment to remove... ignoring...")
             return
         
-        self.log.info("* Removing Miniconda Environment")
+        log.info("* Removing Miniconda Environment")
         
         exec_line = '{} remove -vy --name {} --all'.format(
             self.conda_exec,
