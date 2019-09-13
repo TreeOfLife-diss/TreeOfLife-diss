@@ -27,38 +27,21 @@ import stat
 import shutil
 import ctypes
 
-import logger
-import host_project_vars
-import system
-import messages
-import executables
+from . import (
+    log,
+    ToLHPV,
+    ToLSYSTEM,
+    ToLMSG,
+    ToLEXEC,
+    )
 
-log = logger.InstallLogger(__name__).gen_logger()
-
-python_version = sys.version_info[0]
-log.debug("* Python version: {}".format(python_version))
-
-if python_version < 3:
-    import urllib as url
-    url_not_found_error = IOError
-    user_input = raw_input
-    filenotfounderror = IOError
-
-elif python_version == 3:
-    import urllib
-    import urllib.request as url
-    url_not_found_error = urllib.error.URLError
-    user_input = input
-    filenotfounderror = FileNotFoundError
-
-else:
-    log.info(messages.unknown_python)
-    log.info("* You are running Python version: {}".format(python_version))
-    log.info(messages.something_wrong)
-    log.info(messages.additional_help)
-    log.info(messages.abort)
-    user_input(messages.terminate)
-    sys.exit(1)
+from . import (
+    urlparse,
+    url,
+    url_not_found_error,
+    filenotfounderror,
+    user_input,
+    )
 
 
 def check_available_disk_space(min_space=None):
