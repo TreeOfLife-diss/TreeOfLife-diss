@@ -45,6 +45,80 @@ tw.subsequent_indent = "* "
 tw.width = 70
 
 
+class DisplayMessage:
+    def __init__(
+            self,
+            msg,
+            *args,
+            title='message',
+            stamp='*',
+            msgchar='*',
+            width=72,
+            footer=True,
+            **kwargs,
+            ):
+        
+        self.msg = str(msg)
+        self.args = args
+        self.stamp = (f"{stamp.upper()} " if stamp else '')
+        self.msgchar = msgchar
+        self.width = width
+        self.kwargs = kwargs
+        
+        self.title = title
+        self.footer = footer
+        
+        self.titlemsg = ''
+        self.bodymsg = ''
+        self.footermsg = ''
+        
+        self.build()
+    
+    def __str__(self):
+        return "\n".join(self.displaymessages)
+    
+    @property
+    def displaymessages(self):
+        return [
+            self.titlemsg,
+            self.bodymsg,
+            self.footermsg,
+            ]
+    
+    def build(self):
+        self.maketitle()
+        self.makemsg()
+        self.makefooter()
+    
+    def maketitle(self):
+        
+        titleformatter = "{:" + self.msgchar + "^" + str(self.width) + "}"
+        try:
+            t = " {} ".format(self.title.upper())
+        except (SyntaxError, AttributeError):
+            self.titlemsg = ''
+        else:
+            self.titlemsg = titleformatter.format(t)
+    
+    def makemsg(self):
+        
+        _ = textwrap.dedent(self.msg)
+        _ = [textwrap.wrap(s, width=self.width) for s in _.splitlines()]
+        
+        m = []
+        for l in _:
+            if l:
+                for s in l:
+                    m.append(f"{self.stamp}{s}")
+        
+        self.bodymsg = "\n".join(m)
+        
+        return
+    
+    def makefooter(self):
+        if self.footer:
+            self.footermsg = self.msgchar * self.width
+    
 def _formats_message_body(s):
     """
     s is a string
@@ -240,18 +314,20 @@ update_completed = (
 # HELP MESSAGES
 
 _add_help = (
-    "For additional help, please:\n"
-    f"- write us a message in our mailing list: {ToLCONTACT.mailist} \n"
-    "- or check out our web page:\n"
+    "For additional help write us a message in our mailing list:\n"
+    f"{ToLCONTACT.mailist}\n"
+    "or check out our web page:\n"
     f"{ToLCONTACT.webpage}"
     )
 
-additional_help = (
-    _formats_short_title("help")
-    + _formats_message_body(_add_help)
-    + 72 * '*'
-    + "\n"
-    )
+# additional_help = (
+    # _formats_short_title("help")
+    # + _formats_message_body(_add_help)
+    # + 72 * '*'
+    # + "\n"
+    # )
+
+additional_help = str(DisplayMessage(_add_help, title='help'))
 
 # ERRORS
 
