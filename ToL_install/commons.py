@@ -44,6 +44,21 @@ from . import (
     )
 
 
+def install_choice():
+    # Queries installation option
+    install_choice = None
+    while install_choice not in ("1", "2", "3"):
+        install_choice = user_input(ToLMSG.query).strip()
+        log.debug("install_choice: {}".format(install_choice))
+        if install_choice == "4":
+            log.info(ToLMSG.additional_help)
+            log.info(ToLMSG.install_options_full)
+
+    log.debug("final install_choice: {}".format(install_choice))
+    log.info("\n")
+    return install_choice
+
+
 def check_available_disk_space(min_space=None):
     """
     Checks available disk space.

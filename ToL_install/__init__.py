@@ -1,12 +1,14 @@
 import sys
 import traceback
 
+from . import contactus as ToLCONTACT
 from . import host_project_vars as ToLHPV
 from . import logger
 from .logger import LogFormatter
 from . import system as ToLSYSTEM
 from . import executables as ToLEXEC
 from . import messages as ToLMSG
+# there are more imports at the end of the file
 
 log = logger.get_logger(__name__)
 
@@ -51,5 +53,8 @@ except Exception:
     log.debug(traceback.format_exc())
     something_wrong_with_python_version()
 
+# these imports are kept at the end of the file to keep consistency
+# in the import statements. Where all imports should be done here
+# and from here imported to the different modules.
 from . import commons as ToLCOMM
 from . import condamanager as ToLCM

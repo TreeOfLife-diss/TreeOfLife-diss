@@ -23,6 +23,7 @@ Informative messages for the installation and update processes.
 import os
 import textwrap
 
+from . import ToLCONTACT
 from . import ToLHPV
 from . import ToLSYSTEM
 from . import ToLEXEC
@@ -240,11 +241,9 @@ update_completed = (
 
 _add_help = (
     "For additional help, please:\n"
-    "- contact us via mailing list ({}) ".format(mailist)
-    + "providing the .log file "
-    "created during the installation/update process.\n"
-    "- or check out our installation wiki page:\n"
-    "{}".format(install_wiki)
+    f"- write us a message in our mailing list: {ToLCONTACT.mailist} \n"
+    "- or check out our web page:\n"
+    f"{ToLCONTACT.webpage}"
     )
 
 additional_help = (
