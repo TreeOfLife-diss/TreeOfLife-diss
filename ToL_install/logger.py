@@ -80,7 +80,7 @@ class LogFormatter:
         
         self.msg = str(msg)
         self.args = args
-        self.stamp = (f"* {stamp.upper()} * "if stamp else '')
+        self.stamp = (f"* {stamp.upper()} * " if stamp else '')
         self.width = width
         self.kwargs = kwargs
         
